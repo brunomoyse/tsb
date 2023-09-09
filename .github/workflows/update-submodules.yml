@@ -1,0 +1,23 @@
+name: Update Submodules
+
+on:
+  repository_dispatch:
+    types: [update_submodules]
+
+jobs:
+  update_submodules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Update Submodules
+        run: |
+          git submodule update --remote
+          git config user.name "GitHub Actions Bot"
+          git config user.email "moyse94@gmail.com"
+          git commit -am "Update submodules to latest master"
+          git push

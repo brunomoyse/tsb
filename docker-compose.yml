@@ -1,0 +1,44 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  tsb-server:
+    image: nginx:latest
+    restart: on-failure
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./tsb-service/public:/var/www/tsb-service/public
+    ports:
+      - "8888:80"
+    depends_on:
+      - tsb-service
+      - tsb-core
+    networks:
+      - tsb-network
+
+  tsb-service:
+    build: ./tsb-service
+    volumes:
+      - ./tsb-service:/var/www/tsb-service
+    environment:
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - tsb-network
+
+  tsb-core:
+    build: ./tsb-core
+    volumes:
+      - ./tsb-core:/usr/src/app
+    depends_on:
+      - tsb-service
+    networks:
+      - tsb-network
+
+networks:
+  tsb-network:
+    driver: bridge

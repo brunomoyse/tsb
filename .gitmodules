@@ -1,0 +1,6 @@
+[submodule "tsb-core"]
+	path = tsb-core
+	url = https://github.com/brunomoyse/tsb-core
+[submodule "tsb-service"]
+	path = tsb-service
+	url = https://github.com/brunomoyse/tsb-service

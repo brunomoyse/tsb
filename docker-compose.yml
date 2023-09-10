@@ -17,9 +17,11 @@ services:
       - tsb-network
 
   tsb-service:
+    user: 'www-data:www-data'
     build: ./tsb-service
-    volumes:
-      - ./tsb-service:/var/www/tsb-service
+    #volumes:
+    #  - ./tsb-service:/var/www/tsb-service
+    #  - /var/www/tsb-service/vendor
     environment:
       - DB_CONNECTION=${DB_CONNECTION}
       - DB_HOST=${DB_HOST}
@@ -32,8 +34,8 @@ services:
 
   tsb-core:
     build: ./tsb-core
-    volumes:
-      - ./tsb-core:/usr/src/app
+    #volumes:
+    #  - ./tsb-core:/usr/src/app
     depends_on:
       - tsb-service
     networks:

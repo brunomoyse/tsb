@@ -1,0 +1,40 @@
+name: Deploy to Lightsail VPS
+
+on:
+  push:
+    branches:
+      - main  # adjust if your default branch is named differently
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Deploy to AWS Lightsail
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.SERVER_IP }}
+          USER: admin
+        run: |
+          # Start the SSH agent
+          eval "$(ssh-agent -s)"
+          
+          # Add the private key to the SSH agent
+          ssh-add <(echo "$PRIVATE_KEY")
+          
+          # SSH into the Lightsail server and perform deployment steps
+          ssh -o StrictHostKeyChecking=no $USER@$HOST << 'ENDSSH'
+            cd /var/www/tsb
+            git pull origin main
+            docker-compose down
+            docker-compose build --no-cache
+            docker-compose up -d
+          ENDSSH
+          
+          # Kill the SSH agent
+          ssh-agent -k
